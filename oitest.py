@@ -85,12 +85,6 @@ def compile(problem, language):
 
 
 def test(problem):
-    # 读取测试数据
-    with open(problem + '.in', 'r') as f:
-        test_data = f.read()
-    # 读取答案数据
-    with open(problem + '.ans', 'r') as f:
-        ans_data = f.read()
     # 运行程序
     begin = time.time()
     ret = os.system(problem + '.exe < ' + problem +
