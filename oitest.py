@@ -2,6 +2,7 @@ import argparse
 import os
 from config import configs
 import logging
+import time 
 
 logger = logging.getLogger(name='r')  # 不加名称设置root logger
 
@@ -91,8 +92,12 @@ def test(problem):
     with open(problem + '.ans', 'r') as f:
         ans_data = f.read()
     # 运行程序
+    begin = time.time()
     ret = os.system(problem + '.exe < ' + problem +
                     '.in > ' + problem + '.out')
+    end = time.time()
+    logger.info('Used Time: {0:.3f}s'.format(end - begin))
+
     if ret:
         logger.error('Runtime Error!')
         exit(1)
