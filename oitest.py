@@ -6,6 +6,15 @@ import time
 
 logger = logging.getLogger(name='r')  # 不加名称设置root logger
 
+# 处理输出文件，将文件结尾的空行去掉
+def process_file(file_name):
+    with open(file_name, 'r') as f:
+        lines = f.readlines()
+    # 去掉最后的空行
+    lines[-1] = lines[-1].rstrip('\n')
+    with open(file_name, 'w') as f:
+        f.writelines(lines)
+
 
 def logger_init():
     global logger
@@ -97,6 +106,10 @@ def test(problem):
         exit(1)
     else:
         logger.info('Runtime Success!')
+    # 处理输出文件
+    process_file(problem + '.out')
+    # 处理答案文件
+    process_file(problem + '.ans')
     # 比较输出数据和答案数据
     s = '.'.join(os.popen('diff ' + problem + '.out ' + problem + '.ans').readlines())
     if s == '':
