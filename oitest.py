@@ -117,9 +117,7 @@ def test(problem):
     else:
         logger.error('Wrong Answer!')
         logger.error(s)    
-    # 删除输出数据
-    if os.path.exists(problem + '.out'):
-        os.remove(problem + '.out')
+    # 删除可执行程序
     if os.path.exists(problem + '.exe'):
         os.remove(problem + '.exe')
 
