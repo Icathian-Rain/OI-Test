@@ -111,12 +111,12 @@ def test(problem):
     # 处理答案文件
     process_file(problem + '.ans')
     # 比较输出数据和答案数据
-    s = '.'.join(os.popen('diff ' + problem + '.out ' + problem + '.ans').readlines())
-    if s == '':
+    diff_command = configs['diff_command'].format(problem=problem)
+    s = os.system(diff_command)
+    if s == 0:
         logger.info('Accepted!')
     else:
-        logger.error('Wrong Answer!')
-        logger.error(s)    
+        logger.error('Wrong Answer!')  
     # 删除可执行程序
     if os.path.exists(problem + '.exe'):
         os.remove(problem + '.exe')
