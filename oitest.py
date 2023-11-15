@@ -2,6 +2,7 @@ import argparse
 import os
 from config import configs
 import time 
+import colorama
 
 # 处理输出文件，将文件结尾的空行去掉
 def process_file(file_name):
@@ -56,7 +57,8 @@ def new(problem, language, pattern):
     if not os.path.exists(problem + '.ans'):
         with open(problem + '.ans', 'w') as f:
             pass
-    print('New Problem {0} Success!'.format(problem))
+    # print('New Problem {0} Success!'.format(problem))
+    print(colorama.Fore.GREEN + 'New Problem {0} Success!'.format(problem))
 
 
 # 编译
@@ -66,10 +68,12 @@ def compile(problem, language):
     ret = os.system(compile_command.format(problem=problem))
     # 判断是否编译成功
     if ret:
-        print('Compile Error!')
+        # print('Compile Error!')
+        print(colorama.Fore.RED + 'Compile Error!')
         exit(1)
     else:
-        print('Compile Success!')
+        # print('Compile Success!')
+        print(colorama.Fore.GREEN + 'Compile Success!')
 
 
 def test(problem):
@@ -81,10 +85,12 @@ def test(problem):
     print('Used Time: {0:.3f}s'.format(end - begin))
 
     if ret:
-        print('Runtime Error!')
+        # print('Runtime Error!')
+        print(colorama.Fore.RED + 'Runtime Error!')
         exit(1)
     else:
-        print('Runtime Success!')
+        # print('Runtime Success!')
+        print(colorama.Fore.GREEN + 'Runtime Success!')
     # 处理输出文件
     process_file(problem + '.out')
     # 处理答案文件
@@ -93,9 +99,11 @@ def test(problem):
     diff_command = configs['diff_command'].format(problem=problem)
     s = os.system(diff_command)
     if s == 0:
-        print('Accepted!')
+        # print('Accepted!')
+        print(colorama.Fore.GREEN + 'Accepted!')
     else:
-        print('Wrong Answer!')  
+        # print('Wrong Answer!')  
+        print(colorama.Fore.RED + 'Wrong Answer!')
     # 删除可执行程序
     if os.path.exists(problem + '.exe'):
         os.remove(problem + '.exe')
