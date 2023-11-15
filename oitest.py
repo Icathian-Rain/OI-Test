@@ -1,38 +1,17 @@
 import argparse
 import os
 from config import configs
-import logging
 import time 
-
-logger = logging.getLogger(name='r')  # 不加名称设置root logger
 
 # 处理输出文件，将文件结尾的空行去掉
 def process_file(file_name):
     with open(file_name, 'r') as f:
         lines = f.readlines()
     # 去掉最后的空行
-    lines[-1] = lines[-1].rstrip('\n')
+    if lines!=[]: 
+        lines[-1] = lines[-1].rstrip('\n')
     with open(file_name, 'w') as f:
         f.writelines(lines)
-
-
-def logger_init():
-    global logger
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        '%(levelname)s: - %(message)s')
-    fh = logging.FileHandler('log.txt', mode='w')
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(formatter)
-
-    # 使用StreamHandler输出到屏幕
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(formatter)
-
-    # 添加两个Handler
-    logger.addHandler(ch)
-    logger.addHandler(fh)
 
 
 def parser_args():
@@ -77,7 +56,7 @@ def new(problem, language, pattern):
     if not os.path.exists(problem + '.ans'):
         with open(problem + '.ans', 'w') as f:
             pass
-    logger.info('New Problem {0} Success!'.format(problem))
+    print('New Problem {0} Success!'.format(problem))
 
 
 # 编译
@@ -87,10 +66,10 @@ def compile(problem, language):
     ret = os.system(compile_command.format(problem=problem))
     # 判断是否编译成功
     if ret:
-        logger.error('Compile Error!')
+        print('Compile Error!')
         exit(1)
     else:
-        logger.info('Compile Success!')
+        print('Compile Success!')
 
 
 def test(problem):
@@ -99,13 +78,13 @@ def test(problem):
     ret = os.system(problem + '.exe < ' + problem +
                     '.in > ' + problem + '.out')
     end = time.time()
-    logger.info('Used Time: {0:.3f}s'.format(end - begin))
+    print('Used Time: {0:.3f}s'.format(end - begin))
 
     if ret:
-        logger.error('Runtime Error!')
+        print('Runtime Error!')
         exit(1)
     else:
-        logger.info('Runtime Success!')
+        print('Runtime Success!')
     # 处理输出文件
     process_file(problem + '.out')
     # 处理答案文件
@@ -114,9 +93,9 @@ def test(problem):
     diff_command = configs['diff_command'].format(problem=problem)
     s = os.system(diff_command)
     if s == 0:
-        logger.info('Accepted!')
+        print('Accepted!')
     else:
-        logger.error('Wrong Answer!')  
+        print('Wrong Answer!')  
     # 删除可执行程序
     if os.path.exists(problem + '.exe'):
         os.remove(problem + '.exe')
@@ -124,7 +103,6 @@ def test(problem):
 
 def main():
     parser = parser_args()
-    logger_init()
     # 获取pattern
     pattern = get_pattern(configs['patterns'][parser.language])
 
