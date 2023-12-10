@@ -3,6 +3,9 @@ import os
 from config import configs
 import time 
 import colorama
+import platform
+
+syststr = platform.system()
 
 # 处理输出文件，将文件结尾的空行去掉
 def process_file(file_name):
@@ -79,8 +82,12 @@ def compile(problem, language):
 def test(problem):
     # 运行程序
     begin = time.time()
-    ret = os.system(problem + '.exe < ' + problem +
-                    '.in > ' + problem + '.out')
+    if syststr == "Windows":
+        ret = os.system(problem + '.exe < ' + problem +
+                        '.in > ' + problem + '.out')
+    elif syststr == "Linux":
+        ret = os.system('./' + problem + '.exe < ' + problem +
+                        '.in > ' + problem + '.out')
     end = time.time()
     print('Used Time: {0:.3f}s'.format(end - begin))
 
