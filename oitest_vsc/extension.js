@@ -194,7 +194,6 @@ function testProblem() {
 					vscode.window.terminals.forEach(element => {
 						if (element.name === "diff") {
 							terminal = element;
-							break;
 						}
 					}
 					);
