@@ -126,89 +126,92 @@ function newProblem() {
 }
 
 function testProblem() {
-	// 输入题目ID
-	vscode.window.showInputBox({
-		placeHolder: "Please input a problem ID.",
-		prompt: "Problem ID"
-	}).then(value => {
-		let problemID = value;
-		let workFolder = vscode.workspace.getConfiguration("oitest").get("workFolder");
-		let language = vscode.workspace.getConfiguration("oitest").get("language");
+	// 获取当前打开的文件
+    let editor = vscode.window.activeTextEditor;
+    if (editor === undefined) {
+        vscode.window.showErrorMessage("Please open a file!");
+        return;
+    }
+    let fileName = editor.document.fileName;
+    let problemID = fileName.substring(fileName.lastIndexOf("/") + 1, fileName.lastIndexOf("."));
+    console.log(problemID);
+    let workFolder = vscode.workspace.getConfiguration("oitest").get("workFolder");
+    let language = vscode.workspace.getConfiguration("oitest").get("language");
 
-		if (problemID === undefined) {
-			vscode.window.showErrorMessage("Please input a problem ID!");
-			return;
-		}
-		// 获取当前打开的文件夹
-		let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		if (folderPath === undefined) {
-			vscode.window.showErrorMessage("Please open a folder!");
-			return;
-		}
-		// 进入工作文件夹
-		let workFolderPath = path.join(folderPath, workFolder);
-		if (!fs.existsSync(workFolderPath)) {
-			vscode.window.showErrorMessage("Work folder not found!");
-			return;
-		}
-		// 进入题目文件夹
-		let problemFolderPath = path.join(workFolderPath, problemID);
-		if (!fs.existsSync(problemFolderPath)) {
-			vscode.window.showErrorMessage("Problem folder not found!");
-			return;
-		}
-		let problemFilePath = ""
-		if (language === "cpp") {
-			problemFilePath = path.join(problemFolderPath, problemID + ".cpp");
-		}
-		else {
-			vscode.window.showErrorMessage("Language not supported!");
-			return;
-		}
-		let problemExePath = path.join(problemFolderPath, problemID + ".exe");
-		let inputFilePath = path.join(problemFolderPath, problemID + ".in");
-		let outputFilePath = path.join(problemFolderPath, problemID + ".out");
-		let answerFilePath = path.join(problemFolderPath, problemID + ".ans");
-		if (!fs.existsSync(problemFilePath)) {
-			vscode.window.showErrorMessage("Problem file not found!");
-			return;
-		}
-		// 编译题目文件
-		let ret = compile(problemFilePath, problemExePath, language);
-		if (ret !== true) {
-			vscode.window.showErrorMessage(ret);
-			return;
-		}
-		// 测试输入文件
-		ret = exec(problemExePath, inputFilePath, outputFilePath);
-		if (ret !== true) {
-			vscode.window.showErrorMessage(ret);
-			return;
-		}
-		// 对比答案文件
-		ret = diff(answerFilePath, outputFilePath);
-		if (ret !== true) {
-			vscode.window.showErrorMessage("Wrong Answer!", "show diff").then(value => {
-				if (value === "show diff") {
-					let terminal = undefined;
-					vscode.window.terminals.forEach(element => {
-						if (element.name === "diff") {
-							terminal = element;
-						}
-					}
-					);
-					if (terminal === undefined) {
-						terminal = vscode.window.createTerminal("diff");
-					}
-					terminal.show();
-					let diffCommand = vscode.workspace.getConfiguration("oitest").get("diffCommand");
-					terminal.sendText(diffCommand + " " + answerFilePath + " " + outputFilePath);
-				}
-			});
-			return;
-		}
-		vscode.window.showInformationMessage("Accepted!");
-	});
+    if (problemID === undefined) {
+        vscode.window.showErrorMessage("Please input a problem ID!");
+        return;
+    }
+    // 获取当前打开的文件夹
+    let folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    if (folderPath === undefined) {
+        vscode.window.showErrorMessage("Please open a folder!");
+        return;
+    }
+    // 进入工作文件夹
+    let workFolderPath = path.join(folderPath, workFolder);
+    if (!fs.existsSync(workFolderPath)) {
+        vscode.window.showErrorMessage("Work folder not found!");
+        return;
+    }
+    // 进入题目文件夹
+    let problemFolderPath = path.join(workFolderPath, problemID);
+    if (!fs.existsSync(problemFolderPath)) {
+        vscode.window.showErrorMessage("Problem folder not found!");
+        return;
+    }
+    let problemFilePath = ""
+    if (language === "cpp") {
+        problemFilePath = path.join(problemFolderPath, problemID + ".cpp");
+    }
+    else {
+        vscode.window.showErrorMessage("Language not supported!");
+        return;
+    }
+    let problemExePath = path.join(problemFolderPath, problemID + ".exe");
+    let inputFilePath = path.join(problemFolderPath, problemID + ".in");
+    let outputFilePath = path.join(problemFolderPath, problemID + ".out");
+    let answerFilePath = path.join(problemFolderPath, problemID + ".ans");
+    if (!fs.existsSync(problemFilePath)) {
+        vscode.window.showErrorMessage("Problem file not found!");
+        return;
+    }
+    // 编译题目文件
+    let ret = compile(problemFilePath, problemExePath, language);
+    if (ret !== true) {
+        vscode.window.showErrorMessage(ret);
+        return;
+    }
+    // 测试输入文件
+    ret = exec(problemExePath, inputFilePath, outputFilePath);
+    if (ret !== true) {
+        vscode.window.showErrorMessage(ret);
+        return;
+    }
+    // 对比答案文件
+    ret = diff(answerFilePath, outputFilePath);
+    if (ret !== true) {
+        vscode.window.showErrorMessage("Wrong Answer!", "show diff").then(value => {
+            if (value === "show diff") {
+                let terminal = undefined;
+                vscode.window.terminals.forEach(element => {
+                    if (element.name === "diff") {
+                        terminal = element;
+                    }
+                }
+                );
+                if (terminal === undefined) {
+                    terminal = vscode.window.createTerminal("diff");
+                }
+                terminal.show();
+                let diffCommand = vscode.workspace.getConfiguration("oitest").get("diffCommand");
+                terminal.sendText(diffCommand + " " + answerFilePath + " " + outputFilePath);
+            }
+        });
+        return;
+    }
+    vscode.window.showInformationMessage("Accepted!");
+
 }
 
 
