@@ -1,3 +1,4 @@
+// @oitest id=1001 lang=cpp
 #include<iostream>
 #include<vector>
 #include<unordered_map>
@@ -22,3 +23,4 @@ int main()
 
     return 0;
 }
+// @oitest code=end

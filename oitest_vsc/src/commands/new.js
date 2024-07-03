@@ -45,12 +45,14 @@ function newProblem() {
 		if (language === "cpp") {
 			patternPath = path.join(folderPath, "pattern.cpp");
 		}
-		let patternFile = "";
+		let patternContent = "";
 		if (fs.existsSync(patternPath)) {
-			patternFile = fs.readFileSync(patternPath, "utf-8");
+			patternContent = fs.readFileSync(patternPath, "utf-8");
 		} else {
 			vscode.window.showWarningMessage("Pattern file not found!");
 		}
+        patternContent = "// @oitest id=" + problemID + " lang="+ language + "\n" + patternContent;
+        patternContent += "\n// @oitest code=end\n"
 		// 创建工作文件夹
 		let workFolderPath = path.join(folderPath, workFolder);
 		if (!fs.existsSync(workFolderPath)) {
@@ -63,7 +65,7 @@ function newProblem() {
 		}
 		// 创建题目文件 打开
 		if (language === "cpp") {
-			newAndOpen(path.join(problemFolderPath, problemID + ".cpp"), patternFile);
+			newAndOpen(path.join(problemFolderPath, problemID + ".cpp"), patternContent);
 		}
 		else {
 			vscode.window.showErrorMessage("Language not supported!");
